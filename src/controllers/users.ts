@@ -18,3 +18,21 @@ export const createUser = (req: Request, res: Response, next: NextFunction) => {
 export const getUsers = (req: Request, res: Response, next: NextFunction) => User.find({})
   .then((users) => res.status(constants.HTTP_STATUS_CREATED).send(users))
   .catch(next);
+
+export const getUserById = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => User.findById(req.params.id)
+  .then((user) => {
+    if (!user) {
+      return res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь не найден' });
+    }
+    return res.status(201).json(user);
+  })
+  .catch((error) => {
+    if (error.name === 'CastError') {
+      return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: error.message });
+    }
+    return next(error);
+  });
