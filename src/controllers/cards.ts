@@ -21,11 +21,10 @@ export const getCards = (req: Request, res: Response, next: NextFunction) => Car
   .catch(next);
 
 export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
-  const { id } = req.params;
-  const userId = req.user._id;
-  console.log(id);
+  const { cardId } = req.params;
+  // console.log(id);
 
-  return Card.findByIdAndDelete(id)
+  return Card.findByIdAndDelete(cardId)
     .then((card) => {
       if (!card) {
         return res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
@@ -42,3 +41,39 @@ export const deleteCard = (req: Request, res: Response, next: NextFunction) => {
       return next(error);
     });
 };
+
+export const likeCard = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+  .then((card) => {
+    if (!card) {
+      return res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+    }
+    return res.status(constants.HTTP_STATUS_OK).send({ message: 'Лайк поставлен' });
+  })
+  .catch((error) => {
+    if (error.name === 'CastError') {
+      return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: error.message });
+    }
+    return next(error);
+  });
+
+export const dislikeCard = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+  .then((card) => {
+    if (!card) {
+      return res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Карточка не найдена' });
+    }
+    return res.status(constants.HTTP_STATUS_OK).send({ message: 'Лайк убран' });
+  })
+  .catch((error) => {
+    if (error.name === 'CastError') {
+      return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: error.message });
+    }
+    return next(error);
+  });
