@@ -28,7 +28,7 @@ export const getUserById = (
     if (!user) {
       return res.status(constants.HTTP_STATUS_NOT_FOUND).send({ message: 'Пользователь не найден' });
     }
-    return res.status(201).json(user);
+    return res.status(constants.HTTP_STATUS_CREATED).send(user);
   })
   .catch((error) => {
     if (error.name === 'CastError') {
@@ -36,3 +36,31 @@ export const getUserById = (
     }
     return next(error);
   });
+
+export const updateUser = (req: Request, res: Response, next: NextFunction) => {
+  const { name, about } = req.body;
+  const userId = req.user._id;
+
+  return User.findByIdAndUpdate(userId, { name, about }, { new: true, runValidators: true })
+    .then((user) => res.status(constants.HTTP_STATUS_CREATED).send(user))
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: error.message });
+      }
+      return next(error);
+    });
+};
+
+export const updateAvatar = (req: Request, res: Response, next: NextFunction) => {
+  const { avatar } = req.body;
+  const userId = req.user._id;
+
+  return User.findByIdAndUpdate(userId, { avatar }, { new: true, runValidators: true })
+    .then((user) => res.status(constants.HTTP_STATUS_CREATED).send(user))
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({ message: error.message });
+      }
+      return next(error);
+    });
+};
