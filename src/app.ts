@@ -2,8 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import handleErrors from './middleware/handleErrors';
 import router from './routes/index';
+import config from './config'; // Путь к файлу конфигурации
 
-const { PORT = 3000 } = process.env;
+// const { PORT = 3000 } = process.env;
 
 const app = express();
 app.use(express.json());
@@ -20,10 +21,10 @@ app.use(handleErrors);
 
 const connect = async () => {
   try {
-    await mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+    await mongoose.connect(config.MONGODB_URI);
     console.log('Подключились к базе');
-    await app.listen(PORT);
-    console.log('Сервер запущен на порту: ', PORT);
+    await app.listen(config.PORT);
+    console.log('Сервер запущен на порту: ', config.PORT);
   } catch (err) {
     console.log(err);
   }
