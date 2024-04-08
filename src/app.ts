@@ -2,7 +2,9 @@ import express, { Request, Response, NextFunction } from 'express';
 import mongoose from 'mongoose';
 import handleErrors from './middleware/handleErrors';
 import router from './routes/index';
-import config from './config'; // Путь к файлу конфигурации
+import config from './config';
+import authRouter from './routes/auth';
+import auth from './middleware/auth'; // Путь к файлу конфигурации
 
 // const { PORT = 3000 } = process.env;
 
@@ -16,6 +18,8 @@ app.use((req: Request | any, res: Response, next: NextFunction) => {
   next();
 });
 
+app.use(authRouter);
+app.use(auth);
 app.use(router);
 app.use(handleErrors);
 
