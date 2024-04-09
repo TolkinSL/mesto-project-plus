@@ -5,18 +5,20 @@ import router from './routes/index';
 import config from './config';
 import authRouter from './routes/auth';
 import auth from './middleware/auth'; // Путь к файлу конфигурации
+import helmet from 'helmet';
 
 // const { PORT = 3000 } = process.env;
 
 const app = express();
+app.use(helmet());
 app.use(express.json());
 
-app.use((req: Request | any, res: Response, next: NextFunction) => {
-  req.user = {
-    _id: '660f32a42dab5af1c197c792',
-  };
-  next();
-});
+// app.use((req: Request | any, res: Response, next: NextFunction) => {
+//   req.user = {
+//     _id: '660f32a42dab5af1c197c792',
+//   };
+//   next();
+// });
 
 app.use(authRouter);
 app.use(auth);
