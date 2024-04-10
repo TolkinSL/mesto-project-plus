@@ -36,10 +36,12 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       if (!user) {
         throw new NotFoundError('Пользователь или пароль не найден');
       }
+
       return bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
           throw new NotFoundError('Пользователь или пароль не найден');
         }
+
         const token = jwt.sign({ _id: user._id }, config.SECRET_KEY, {
           expiresIn: '7d',
         });
@@ -68,12 +70,14 @@ export const getUserById = (
     if (!user) {
       throw new NotFoundError('Пользователь не найден');
     }
+
     return res.status(constants.HTTP_STATUS_CREATED).send(user);
   })
   .catch((error) => {
     if (error.name === 'CastError') {
       return next(new BadRequestError(error.message));
     }
+
     return next(error);
   });
 
@@ -87,6 +91,7 @@ export const updateUser = (req: Request, res: Response, next: NextFunction) => {
       if (error.name === 'ValidationError') {
         return next(new BadRequestError(error.message));
       }
+
       return next(error);
     });
 };
@@ -101,6 +106,7 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
       if (error.name === 'ValidationError') {
         return next(new BadRequestError(error.message));
       }
+
       return next(error);
     });
 };
@@ -116,6 +122,7 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
       if (!user) {
         throw new NotFoundError('User not found');
       }
+
       return res.status(constants.HTTP_STATUS_OK).send(user);
     })
     .catch(next);

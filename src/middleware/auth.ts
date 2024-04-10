@@ -13,7 +13,6 @@ export default (req: Request, res: Response, next: NextFunction) => {
     const token = authorization.replace('Bearer ', '');
     const payload = jwt.verify(token, config.SECRET_KEY);
     (req as any).user = payload;
-    console.log(payload);
     return next();
   } catch (error) {
     return next(new AuthError('Нужна авторизация'));
