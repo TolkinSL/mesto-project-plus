@@ -4,6 +4,7 @@ import Card from '../models/card';
 import mongoose from "mongoose";
 import NotFoundError from "../utils/NotFoundError";
 import BadRequestError from "../utils/BadRequestError";
+import PermissionError from "../utils/PermissionError";
 
 export const createCard = (req: Request, res: Response, next: NextFunction) => {
   const { name, link } = req.body;
@@ -33,7 +34,7 @@ export const deleteCard = async (req: Request, res: Response, next: NextFunction
     });
 
     if (!userId || card.owner.toString() !== userId) {
-      throw new BadRequestError('Удалить карточку может только владелец');
+      throw new PermissionError('Удалить карточку может только владелец');
     }
     await Card.deleteOne({ _id: cardId });
     return res
